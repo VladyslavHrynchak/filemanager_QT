@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/rec">
+        <file>img/folder.png</file>
+        <file>img/file.png</file>
+        <file>img/odt.png</file>
+        <file>img/docx.png</file>
+        <file>img/pdf.png</file>
+        <file>img/exe.png</file>
+        <file>img/cpp.png</file>
+        <file>img/mp4.png</file>
+        <file>img/mp3.png</file>
+        <file>img/png.png</file>
+    </qresource>
+</RCC>

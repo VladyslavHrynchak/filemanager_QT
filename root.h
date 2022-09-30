@@ -14,15 +14,11 @@ public:
 
 	void saveFolder(const std::filesystem::path& path);
 
-	void print_list_of_files_in_the_directory(const std::filesystem::path& path);
-
     void addFile(const std::filesystem::path& path, const std::string& name);
 
     void addFolder(const std::filesystem::path& path, const std::string& name);
 
     void deleteFile(const std::filesystem::path& path, const std::string& name);
-
-    void deleteFile(const std::filesystem::path& path);
 	
     void copy_file_or_folder(const std::filesystem::path& path,const std::string& name);
 

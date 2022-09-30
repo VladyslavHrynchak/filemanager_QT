@@ -89,15 +89,6 @@ void Root::saveFolder(const std::filesystem::path& path)
 
 }
 
-void Root::print_list_of_files_in_the_directory(const std::filesystem::path& path)
-{
-
-	for (const auto& entry : fs::directory_iterator(path))
-	{
-        cout << entry.path().filename() << endl;
-	}
-
-}
 
 void Root::deleteFile(const std::filesystem::path& path, const string& name)
 {

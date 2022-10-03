@@ -5,6 +5,10 @@
 #include <iostream>
 #include <algorithm>
 #include <fstream>
+#include <thread>
+#include <mutex>
+#include <queue>
+#include <atomic>
 
 namespace fs = std::filesystem;
 
@@ -199,25 +203,6 @@ void Root::move_file_or_folder(const std::filesystem::path& path)
 
 }
 
-vector<Entity*> Root::search_file_or_folder(const string& name_of_file)
-{
-	vector<Entity*> search;
-	size_t pos; 
-     for (size_t i = 0; i < entities.size(); i++)
-	 {
-         pos = entities[i].name.find(name_of_file);
-		  if (pos != std::string::npos)
-		  {
-             search.push_back(&(entities[i]));
-		  }
-	 }
-	 if (search.empty())
-	 {
-		 cout << "No file in directory" << endl;
-	 }
-	 return search;
-}
-
 int Root::size_of_folder(const std::filesystem::path& path)
 {
     int size = 0;
@@ -253,7 +238,73 @@ void Root::sort_by_size()
 
 }
 
+bool Root::search_file(const string& path,const string& name_of_file)
+{
+   for (const auto& entry : fs::recursive_directory_iterator(path,filesystem::directory_options::skip_permission_denied))
+   {
+        if (entry.path().filename().string() == name_of_file)
+        {
+            search_directories.push_back(entry.path());
+            return true;
+        }
+    }
+    return false;
+}
 
+void Root::find_file(const std::string& name)
+{
+    search_directories.clear();
+    const string rootPath = "/home";
+    const uint maxThreads = 8;
+
+    atomic_bool stop = false;
+    vector<thread> threads;
+
+    queue<string> subdirs;
+    mutex m;
+
+    for (const auto& entry : fs::directory_iterator(rootPath))
+    {
+        if(entry.is_directory())
+        {
+            subdirs.push(entry.path().string());
+        }
+    }
+
+    threads.reserve(maxThreads);
+    for (int i = 0; i < maxThreads; ++i)
+    {
+       threads.push_back(thread([&]()
+       {
+          while(true)
+          {
+
+             if(stop)
+               return;
+
+             string path;
+             m.lock();
+             if(!subdirs.empty())
+             {
+                path = subdirs.front();
+                subdirs.pop();
+             }
+             else
+             {
+                m.unlock();
+                return;
+             }
+             m.unlock();
+
+             if(search_file(path,name))
+                stop = true;
+          }
+        }));
+    }
+
+    for (auto &t : threads)
+        t.join();
+}
 
 
 

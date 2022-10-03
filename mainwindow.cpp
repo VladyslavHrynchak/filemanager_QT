@@ -121,6 +121,70 @@ void MainWindow::addItems_to_listWidget_second()
 
 }
 
+void  MainWindow::addItems_to_listWidget_second(const std::vector<fs::path> paths)
+{
+
+    for (int i = 0; i < paths.size(); ++i)
+    {
+        ui->progressBar->setValue(i);
+
+        if(fs::is_regular_file(paths[i]))
+        {
+            if(paths[i].extension() == ".odt")
+            {
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/odt.png"),paths[i].filename().c_str());
+                ui->listWidget_second->addItem(item);
+            }
+            else if(paths[i].extension() == ".exe")
+            {
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/exe.png"),paths[i].filename().c_str());
+                ui->listWidget_second->addItem(item);
+            }
+            else if(paths[i].extension() == ".mp4")
+            {
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp4.png"),paths[i].filename().c_str());
+                ui->listWidget_second->addItem(item);
+            }
+            else if(paths[i].extension() == ".mp3")
+            {
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp3.png"),paths[i].filename().c_str());
+                ui->listWidget_second->addItem(item);
+            }
+            else if(paths[i].extension() == ".cpp")
+            {
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/cpp.png"),paths[i].filename().c_str());
+                ui->listWidget_second->addItem(item);
+            }
+            else if(paths[i].extension() == ".pdf")
+            {
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/pdf.png"),paths[i].filename().c_str());
+                ui->listWidget_second->addItem(item);
+            }
+            else if(paths[i].extension() == ".png")
+            {
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/png.png"),paths[i].filename().c_str());
+                ui->listWidget_second->addItem(item);
+            }
+            else if(paths[i].extension() == ".docx")
+            {
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/docx.png"),paths[i].filename().c_str());
+                ui->listWidget_second->addItem(item);
+            }
+            else
+            {
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/file.png"),paths[i].filename().c_str());
+                ui->listWidget_second->addItem(item);
+            }
+        }
+        else
+        {
+            QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/folder.png"),paths[i].filename().c_str());
+            ui->listWidget_second->addItem(item);
+        }
+    }
+
+}
+
 void MainWindow::on_listWidget_main_itemDoubleClicked(QListWidgetItem *item)
 {
 
@@ -136,7 +200,16 @@ void MainWindow::on_listWidget_main_itemDoubleClicked(QListWidgetItem *item)
 void MainWindow::on_listWidget_second_itemDoubleClicked(QListWidgetItem *item)
 {
 
+    if(!filemanager.directory.search_directories.empty())
+    {
+        filemanager.path = filemanager.directory.search_directories[0].parent_path();
+        filemanager.go_the_other_path(filemanager.directory.search_directories[0].filename());
+        filemanager.directory.search_directories.clear();
+    }
+    else
+    {
      filemanager.go_the_other_path(item->text().toStdString());
+    }
      ui->listWidget_second->clear();
      ui->lineEdit->clear();
      ui->lineEdit->setText(QString(filemanager.path.c_str()));
@@ -160,14 +233,15 @@ void MainWindow::on_pushButton_back_pressed()
 
 }
 
-
 void MainWindow::on_lineEdit_editingFinished()
 {
-
-    filemanager.path = ui->lineEdit->text().toStdString();
-    filemanager.go_the_other_path();
-    ui->listWidget_second->clear();
-    addItems_to_listWidget_second();
+    if(ui->lineEdit->text().toStdString()[0] == '/')
+    {
+        filemanager.path = ui->lineEdit->text().toStdString();
+        filemanager.go_the_other_path();
+        ui->listWidget_second->clear();
+        addItems_to_listWidget_second();
+    }
 
 }
 
@@ -422,4 +496,13 @@ void MainWindow::on_actionfolder_create_triggered()
     create_folder();
 }
 
+void MainWindow::on_actionSearch_triggered()
+{
+
+    ui->listWidget_second->clear();
+    filemanager.directory.find_file(ui->lineEdit->text().toStdString());
+    addItems_to_listWidget_second(filemanager.directory.search_directories);
+    ui->lineEdit->text().clear();
+
+}
 

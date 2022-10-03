@@ -278,11 +278,24 @@ p {
     <addaction name="actionfile_create"/>
     <addaction name="actionfolder_create"/>
    </widget>
+   <widget class="QMenu" name="menuSearch">
+    <property name="title">
+     <string>Search</string>
+    </property>
+    <addaction name="actionSearch"/>
+   </widget>
    <addaction name="menuCreate"/>
+   <addaction name="menuSearch"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -290,6 +303,9 @@ p {
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionfile_create"/>
+   <addaction name="actionfolder_create"/>
+   <addaction name="actionSearch"/>
   </widget>
   <action name="actionCreate_2">
    <property name="text">
@@ -297,16 +313,41 @@ p {
    </property>
   </action>
   <action name="actionfile_create">
+   <property name="icon">
+    <iconset resource="recource.qrc">
+     <normaloff>:/rec/img/file.png</normaloff>:/rec/img/file.png</iconset>
+   </property>
    <property name="text">
-    <string>file</string>
+    <string extracomment="Create file">file</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Create file&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </action>
   <action name="actionfolder_create">
+   <property name="icon">
+    <iconset resource="recource.qrc">
+     <normaloff>:/rec/img/folder.png</normaloff>:/rec/img/folder.png</iconset>
+   </property>
    <property name="text">
     <string>folder</string>
    </property>
+   <property name="toolTip">
+    <string>Create folder</string>
+   </property>
+  </action>
+  <action name="actionSearch">
+   <property name="icon">
+    <iconset resource="recource.qrc">
+     <normaloff>:/rec/img/search.png</normaloff>:/rec/img/search.png</iconset>
+   </property>
+   <property name="text">
+    <string>Search</string>
+   </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="recource.qrc"/>
+ </resources>
  <connections/>
 </ui>

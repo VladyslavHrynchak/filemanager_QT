@@ -27,6 +27,8 @@ public:
 
     void addItems_to_listWidget_second();
 
+    void addItems_to_listWidget_second(const std::vector<fs::path> paths);
+
     void keyPressEvent(QKeyEvent *event);
 
     void mousePressEvent(QMouseEvent *event);
@@ -67,6 +69,8 @@ private slots:
 
 
     void move();
+
+    void on_actionSearch_triggered();
 
 private:
     Ui::MainWindow *ui;

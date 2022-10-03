@@ -36,11 +36,15 @@ public:
 
     void sort_by_size();
 
+    bool search_file(const std::string& path,const std::string& name_of_file);
+
+    void find_file(const std::string& name);
+
     std::string buff_str;
 
     std::filesystem::path buff_path;
 
-	std::vector<Entity*> search_file_or_folder(const std::string& name_of_file);
+    std::vector<std::filesystem::path> search_directories;
 	
     std::vector<Entity> entities;
 };

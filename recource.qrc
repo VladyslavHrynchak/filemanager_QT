@@ -10,5 +10,6 @@
         <file>img/mp4.png</file>
         <file>img/mp3.png</file>
         <file>img/png.png</file>
+        <file>img/search.png</file>
     </qresource>
 </RCC>

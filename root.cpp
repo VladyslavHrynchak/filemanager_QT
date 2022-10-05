@@ -52,16 +52,16 @@ void Root::saveDirectoty(const std::filesystem::path& path)
 		{
 			File newfile;
 			newfile.path = entry.path();
-            newfile.name = entry.path().filename();
+            newfile.name = entry.path().filename().string();
             newfile.size = fs::file_size(entry.path());
-            newfile.extension = entry.path().extension();
+            newfile.extension = entry.path().extension().string();
             entities.push_back(newfile);
 		}
 		else
 		{
 			Folder newfolder;
 			newfolder.path = entry.path();
-            newfolder.name = entry.path().filename();
+            newfolder.name = entry.path().filename().string();
             newfolder.size = size_of_folder(entry.path());
             entities.push_back(newfolder);
 		}
@@ -75,9 +75,9 @@ void Root::saveFile(const std::filesystem::path& path)
 
 	File newfile;
 	newfile.path = path;
-    newfile.name = path.filename();
+    newfile.name = path.filename().string();
 	newfile.size = fs::file_size(path);
-    newfile.extension = path.extension();
+    newfile.extension = path.extension().string();
     entities.push_back(newfile);
 }
 
@@ -87,7 +87,7 @@ void Root::saveFolder(const std::filesystem::path& path)
 
 	Folder newfolder;
 	newfolder.path = path;
-    newfolder.name = path.filename();
+    newfolder.name = path.filename().string();
     newfolder.size = size_of_folder(path);
     entities.push_back(newfolder);
 
@@ -123,7 +123,7 @@ void Root::deleteFile(const std::filesystem::path& path, const string& name)
             entities.erase( entities.begin() +  index_to_delete);
 			fs::remove(newpath);
             isAddPath = true;
-            saveDirectoty(path);
+
 		}
 		catch (const std::exception& ex)
 		{
@@ -254,8 +254,14 @@ bool Root::search_file(const string& path,const string& name_of_file)
 void Root::find_file(const std::string& name)
 {
     search_directories.clear();
+
+
+    #ifdef linux
     const string rootPath = "/home";
-    const uint maxThreads = 8;
+    #elif _WIN32
+    const string rootPath = "C:";
+    #endif
+    const unsigned int maxThreads = 8;
 
     atomic_bool stop = false;
     vector<thread> threads;

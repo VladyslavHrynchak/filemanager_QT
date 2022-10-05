@@ -132,53 +132,53 @@ void  MainWindow::addItems_to_listWidget_second(const std::vector<fs::path> path
         {
             if(paths[i].extension() == ".odt")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/odt.png"),paths[i].filename().c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/odt.png"),paths[i].filename().string().c_str());
                 ui->listWidget_second->addItem(item);
             }
             else if(paths[i].extension() == ".exe")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/exe.png"),paths[i].filename().c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/exe.png"),paths[i].filename().string().c_str());
                 ui->listWidget_second->addItem(item);
             }
             else if(paths[i].extension() == ".mp4")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp4.png"),paths[i].filename().c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp4.png"),paths[i].filename().string().c_str());
                 ui->listWidget_second->addItem(item);
             }
             else if(paths[i].extension() == ".mp3")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp3.png"),paths[i].filename().c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp3.png"),paths[i].filename().string().c_str());
                 ui->listWidget_second->addItem(item);
             }
             else if(paths[i].extension() == ".cpp")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/cpp.png"),paths[i].filename().c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/cpp.png"),paths[i].filename().string().c_str());
                 ui->listWidget_second->addItem(item);
             }
             else if(paths[i].extension() == ".pdf")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/pdf.png"),paths[i].filename().c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/pdf.png"),paths[i].filename().string().c_str());
                 ui->listWidget_second->addItem(item);
             }
             else if(paths[i].extension() == ".png")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/png.png"),paths[i].filename().c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/png.png"),paths[i].filename().string().c_str());
                 ui->listWidget_second->addItem(item);
             }
             else if(paths[i].extension() == ".docx")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/docx.png"),paths[i].filename().c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/docx.png"),paths[i].filename().string().c_str());
                 ui->listWidget_second->addItem(item);
             }
             else
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/file.png"),paths[i].filename().c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/file.png"),paths[i].filename().string().c_str());
                 ui->listWidget_second->addItem(item);
             }
         }
         else
         {
-            QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/folder.png"),paths[i].filename().c_str());
+            QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/folder.png"),paths[i].filename().string().c_str());
             ui->listWidget_second->addItem(item);
         }
     }
@@ -188,11 +188,15 @@ void  MainWindow::addItems_to_listWidget_second(const std::vector<fs::path> path
 void MainWindow::on_listWidget_main_itemDoubleClicked(QListWidgetItem *item)
 {
 
+    #ifdef linux
     filemanager.path = "/home";
+    #elif _WIN32
+    filemanager.path = "C:";
+    #endif
     filemanager.go_the_other_path(item->text().toStdString());
     ui->listWidget_second->clear();
     ui->lineEdit->clear();
-    ui->lineEdit->setText(QString(filemanager.path.c_str()));
+    ui->lineEdit->setText(QString(filemanager.path.string().c_str()));
     addItems_to_listWidget_second();
 
 }
@@ -203,7 +207,7 @@ void MainWindow::on_listWidget_second_itemDoubleClicked(QListWidgetItem *item)
     if(!filemanager.directory.search_directories.empty())
     {
         filemanager.path = filemanager.directory.search_directories[0].parent_path();
-        filemanager.go_the_other_path(filemanager.directory.search_directories[0].filename());
+        filemanager.go_the_other_path(filemanager.directory.search_directories[0].filename().string());
         filemanager.directory.search_directories.clear();
     }
     else
@@ -212,7 +216,7 @@ void MainWindow::on_listWidget_second_itemDoubleClicked(QListWidgetItem *item)
     }
      ui->listWidget_second->clear();
      ui->lineEdit->clear();
-     ui->lineEdit->setText(QString(filemanager.path.c_str()));
+     ui->lineEdit->setText(QString(filemanager.path.string().c_str()));
      addItems_to_listWidget_second();
 
 }
@@ -226,7 +230,7 @@ void MainWindow::on_pushButton_back_pressed()
         filemanager.go_the_other_path();
         filemanager.paths.pop();
         ui->lineEdit->clear();
-        ui->lineEdit->setText(QString(filemanager.path.c_str()));
+        ui->lineEdit->setText(QString(filemanager.path.string().c_str()));
         ui->listWidget_second->clear();
         addItems_to_listWidget_second();
     }
@@ -418,10 +422,10 @@ void MainWindow::info_about_entities()
                 about.ui->label_3->setText(QString("size: "));
                 about.ui->label_4->setText(QString("extension: "));
 
-                about.ui->about_right_1->setText(QString(path.filename().c_str()));
-                about.ui->about_right_2->setText(QString(filemanager.path.c_str()));
+                about.ui->about_right_1->setText(QString(path.filename().string().c_str()));
+                about.ui->about_right_2->setText(QString(filemanager.path.string().c_str()));
                 about.ui->about_right_3->setText(QString::number(filemanager.directory.size_of_folder(filemanager.path)));
-                about.ui->about_right_4->setText(QString(path.extension().c_str()));
+                about.ui->about_right_4->setText(QString(path.extension().string().c_str()));
             }
             else
             {
@@ -429,8 +433,8 @@ void MainWindow::info_about_entities()
                 about.ui->label_2->setText(QString("path: "));
                 about.ui->label_3->setText(QString("size: "));
 
-                about.ui->about_right_1->setText(QString(path.filename().c_str()));
-                about.ui->about_right_2->setText(QString(filemanager.path.c_str()));
+                about.ui->about_right_1->setText(QString(path.filename().string().c_str()));
+                about.ui->about_right_2->setText(QString(filemanager.path.string().c_str()));
                 about.ui->about_right_3->setText(QString::number(filemanager.directory.size_of_folder(filemanager.path)));
             }
 
@@ -467,7 +471,12 @@ void MainWindow::info_about_space_on_computer()
 {
 
     about.reset_all();
+
+    #ifdef linux
     const auto& root = fs::path("/");
+    #elif _WIN32
+    const auto& root = fs::path("C:");
+    #endif
 
     const auto& space = fs::space(root);
 

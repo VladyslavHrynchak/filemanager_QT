@@ -17,7 +17,11 @@ struct FileManager
 
     stack<std::filesystem::path> paths;
 
+    #ifdef linux
     std::filesystem::path path = "/home";
+    #elif _WIN32
+    std::filesystem::path path = "C:";
+    #endif
 
 	void go_the_other_path();
 

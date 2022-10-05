@@ -17,18 +17,20 @@ Form_for_move::Form_for_move(QWidget *parent) :
 
 Form_for_move::~Form_for_move()
 {
-
     delete ui;
-
 }
 
 void Form_for_move::addFilemanager(const  FileManager &filemanager_)
 {
 
     this->filemanager = filemanager_;
-    buff = filemanager.path.c_str();
+    buff = filemanager.path.string().c_str();
+    #ifdef linux
     filemanager.go_the_other_path("/home");
-    ui->lineEdit->setText(QString(filemanager.path.c_str()));
+    #elif _WIN32
+    filemanager.go_the_other_path("C:");
+    #endif
+    ui->lineEdit->setText(QString(filemanager.path.string().c_str()));
 
 }
 
@@ -103,7 +105,7 @@ void Form_for_move::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
     ui->listWidget->clear();
     ui->lineEdit->text().clear();
     ui->lineEdit->clear();
-    ui->lineEdit->setText(QString(filemanager.path.c_str()));
+    ui->lineEdit->setText(QString(filemanager.path.string().c_str()));
     addItem();
 
 }
@@ -117,7 +119,7 @@ void Form_for_move::on_pushButton_back_clicked()
         filemanager.go_the_other_path();
         filemanager.paths.pop();
         ui->lineEdit->clear();
-        ui->lineEdit->setText(QString(filemanager.path.c_str()));
+        ui->lineEdit->setText(QString(filemanager.path.string().c_str()));
         ui->listWidget->clear();
         addItem();
     }

@@ -12,9 +12,9 @@ class FileManager
 
 public:
 
-	FileManager();
+    FileManager();
 
-	void go_the_other_path();
+    void go_the_other_path();
 
     void go_the_other_path(const string& next_dir);
 

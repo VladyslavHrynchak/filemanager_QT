@@ -1,6 +1,4 @@
-#ifndef ABOUT_ENTITY_H
-#define ABOUT_ENTITY_H
-
+#pragma once
 #include <QWidget>
 
 namespace Ui {
@@ -19,4 +17,4 @@ public:
     Ui::About_entity *ui;
 };
 
-#endif // ABOUT_ENTITY_H
+

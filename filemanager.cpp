@@ -34,7 +34,7 @@ void FileManager::go_the_other_path(const string& next_dir)
     {
         try
         {
-            paths.push(path);
+            paths_for_button_back.push(path);
             path /= next_dir;
             directory.clearDirectory();
 
@@ -49,3 +49,12 @@ void FileManager::go_the_other_path(const string& next_dir)
     }
 
 }
+
+stack<std::filesystem::path> FileManager::getPaths_for_button_back()
+{
+    return paths_for_button_back;
+}
+
+
+
+

@@ -20,16 +20,14 @@ Form_for_move::~Form_for_move()
     delete ui;
 }
 
-void Form_for_move::addFilemanager(const  FileManager &filemanager_)
+void Form_for_move::addFilemanager(const FileManager &filemanager_)
 {
 
     this->filemanager = filemanager_;
     buff = filemanager.path.string().c_str();
-    #ifdef linux
+
     filemanager.go_the_other_path("/home");
-    #elif _WIN32
-    filemanager.go_the_other_path("C:");
-    #endif
+
     ui->lineEdit->setText(QString(filemanager.path.string().c_str()));
 
 }
@@ -39,59 +37,59 @@ void Form_for_move::addItem()
 
     ui->listWidget->clear();
 
-    for (int i = 0; i < filemanager.directory.entities.size(); ++i)
+    for (int i = 0; i < filemanager.directory.getEntities().size(); ++i)
     {
-        if(fs::is_regular_file(filemanager.directory.entities[i].path))
+        if(fs::is_regular_file(filemanager.directory.getEntities()[i].path))
         {
-            if(filemanager.directory.entities[i].extension == ".odt")
+            if(filemanager.directory.getEntities()[i].extension == ".odt")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/odt.png"),filemanager.directory.entities[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/odt.png"),filemanager.directory.getEntities()[i].name.c_str());
                 ui->listWidget->addItem(item);
             }
-            else if(filemanager.directory.entities[i].extension == ".exe")
+            else if(filemanager.directory.getEntities()[i].extension == ".exe")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/exe.png"),filemanager.directory.entities[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/exe.png"),filemanager.directory.getEntities()[i].name.c_str());
                 ui->listWidget->addItem(item);
             }
-            else if(filemanager.directory.entities[i].extension == ".mp4")
+            else if(filemanager.directory.getEntities()[i].extension == ".mp4")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp4.png"),filemanager.directory.entities[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp4.png"),filemanager.directory.getEntities()[i].name.c_str());
                 ui->listWidget->addItem(item);
             }
-            else if(filemanager.directory.entities[i].extension == ".mp3")
+            else if(filemanager.directory.getEntities()[i].extension == ".mp3")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp3.png"),filemanager.directory.entities[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp3.png"),filemanager.directory.getEntities()[i].name.c_str());
                 ui->listWidget->addItem(item);
             }
-            else if(filemanager.directory.entities[i].extension == ".cpp")
+            else if(filemanager.directory.getEntities()[i].extension == ".cpp")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/cpp.png"),filemanager.directory.entities[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/cpp.png"),filemanager.directory.getEntities()[i].name.c_str());
                 ui->listWidget->addItem(item);
             }
-            else if(filemanager.directory.entities[i].extension == ".pdf")
+            else if(filemanager.directory.getEntities()[i].extension == ".pdf")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/pdf.png"),filemanager.directory.entities[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/pdf.png"),filemanager.directory.getEntities()[i].name.c_str());
                 ui->listWidget->addItem(item);
             }
-            else if(filemanager.directory.entities[i].extension == ".png")
+            else if(filemanager.directory.getEntities()[i].extension == ".png")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/png.png"),filemanager.directory.entities[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/png.png"),filemanager.directory.getEntities()[i].name.c_str());
                 ui->listWidget->addItem(item);
             }
-            else if(filemanager.directory.entities[i].extension == ".docx")
+            else if(filemanager.directory.getEntities()[i].extension == ".docx")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/docx.png"),filemanager.directory.entities[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/docx.png"),filemanager.directory.getEntities()[i].name.c_str());
                 ui->listWidget->addItem(item);
             }
             else
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/file.png"),filemanager.directory.entities[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/file.png"),filemanager.directory.getEntities()[i].name.c_str());
                 ui->listWidget->addItem(item);
             }
         }
         else
         {
-            QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/folder.png"),filemanager.directory.entities[i].name.c_str());
+            QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/folder.png"),filemanager.directory.getEntities()[i].name.c_str());
             ui->listWidget->addItem(item);
         }
     }
@@ -113,11 +111,11 @@ void Form_for_move::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
 void Form_for_move::on_pushButton_back_clicked()
 {
 
-    if(filemanager.paths.size() != 1)
+    if(filemanager.getPaths_for_button_back().size() != 1)
     {
-        filemanager.path = filemanager.paths.top();
+        filemanager.path = filemanager.getPaths_for_button_back().top();
         filemanager.go_the_other_path();
-        filemanager.paths.pop();
+        filemanager.getPaths_for_button_back().pop();
         ui->lineEdit->clear();
         ui->lineEdit->setText(QString(filemanager.path.string().c_str()));
         ui->listWidget->clear();
@@ -133,7 +131,7 @@ void Form_for_move::move()
     ui->listWidget->clear();
     addItem();
     filemanager.go_the_other_path(buff);
-    filemanager.directory.deleteFile(buff,filemanager.directory.buff_str);
+    filemanager.directory.deleteFile(buff,filemanager.directory.getBuff_str());
 }
 
 

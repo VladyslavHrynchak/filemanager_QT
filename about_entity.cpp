@@ -16,10 +16,8 @@ About_entity::~About_entity()
     delete ui;
 }
 
-
 void About_entity::reset_all()
 {
-
     ui->about_right_1->clear();
     ui->about_right_2->clear();
     ui->about_right_3->clear();

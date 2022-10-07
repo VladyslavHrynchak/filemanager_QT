@@ -1,11 +1,10 @@
-#ifndef FOLDER_H
-#define FOLDER_H
+#pragma once
 #include "entity.h"
 
-struct Folder:public Entity
+class Folder:public Entity
 {
 
-		
+
 };
 
-#endif
+

@@ -19,28 +19,38 @@ void Root::clearDirectory()
     entities.clear();
 }
 
-void Root::addFile(const std::filesystem::path& path, const string& name)
+bool Root::addFile(const std::filesystem::path& path, const string& name)
 {
+
     if(!name.empty())
     {
         std::filesystem::path newpath = path;
         newpath /= name;
-        fs::create_directories(newpath.parent_path());
-        std::ofstream ofs(newpath);
-        ofs << " ";
-        ofs.close();
-        saveFile(newpath);
+        if(!fs::exists(newpath))
+        {
+            fs::create_directories(newpath.parent_path());
+            std::ofstream ofs(newpath);
+            ofs.close();
+            saveFile(newpath);
+            return true;
+        }
     }
+    return false;
+
 }
 
-void Root::addFolder(const std::filesystem::path& path ,const string& name)
+bool Root::addFolder(const std::filesystem::path& path ,const string& name)
 {
 
 	std::filesystem::path newpath = path;
     newpath /= name;
-	fs::create_directories(newpath);
-	saveFolder(newpath);
-
+    if(!fs::exists(newpath))
+    {
+        fs::create_directories(newpath);
+        saveFolder(newpath);
+        return true;
+    }
+    return false;
 }
 
 void Root::saveDirectoty(const std::filesystem::path& path)
@@ -50,22 +60,12 @@ void Root::saveDirectoty(const std::filesystem::path& path)
 	{
 		if (fs::is_regular_file(entry))
 		{
-			File newfile;
-			newfile.path = entry.path();
-            newfile.name = entry.path().filename().string();
-            newfile.size = fs::file_size(entry.path());
-            newfile.extension = entry.path().extension().string();
-            entities.push_back(newfile);
+            saveFile(entry.path());
 		}
 		else
 		{
-			Folder newfolder;
-			newfolder.path = entry.path();
-            newfolder.name = entry.path().filename().string();
-            newfolder.size = size_of_folder(entry.path());
-            entities.push_back(newfolder);
+            saveFolder(entry.path());
 		}
-
 	}
 
 }
@@ -79,6 +79,7 @@ void Root::saveFile(const std::filesystem::path& path)
 	newfile.size = fs::file_size(path);
     newfile.extension = path.extension().string();
     entities.push_back(newfile);
+
 }
 
 
@@ -94,47 +95,58 @@ void Root::saveFolder(const std::filesystem::path& path)
 }
 
 
-void Root::deleteFile(const std::filesystem::path& path, const string& name)
+bool Root::deleteFile(const std::filesystem::path& path, const string& name)
 {
 
 	bool isAddPath = false;
     int index_to_delete = 0;
+    std::filesystem::path newpath = path;
 	while (!isAddPath)
 	{
-		try
+        try
 		{
-			std::filesystem::path newpath = path;
+
             newpath /= name;
+            if(newpath.string().back() == '/')
+            {
+                return false;
+            }
+
 			if (!fs::exists(newpath))
 			{
-                return;
+
+               return false;
 			}
-            for (size_t i = 0; i < entities.size(); i++)
-			{
-                if (entities[i].path == newpath)
-				{
-                    entities[i].path = " ";
-                    entities[i].name = " ";
-                    entities[i].size = 0;
-                    entities[i].extension = " ";
-                    index_to_delete = i;
-				}
-			}
-            entities.erase( entities.begin() +  index_to_delete);
+
+
 			fs::remove(newpath);
             isAddPath = true;
 
 		}
 		catch (const std::exception& ex)
 		{
-			cout << ex.what() << endl;
+
+            return false;
 		}
 	}
+    for (size_t i = 0; i < entities.size(); i++)
+    {
+        if (entities[i].path == newpath)
+        {
+            entities[i].path = " ";
+            entities[i].name = " ";
+            entities[i].size = 0;
+            index_to_delete = i;
+        }
+    }
+    entities.erase( entities.begin() +  index_to_delete);
+    return true;
 
 }
 
 void Root::copy_file_or_folder(const std::filesystem::path& path,const string& name)
 {
+
 	bool isAddPath = false;
 	while (!isAddPath)
 	{
@@ -143,8 +155,13 @@ void Root::copy_file_or_folder(const std::filesystem::path& path,const string& n
 		    std::filesystem::path curr_path = path;
 
             curr_path /= name;
+            if(curr_path.string().back() == '/')
+            {
+                return;
+            }
 			if (!fs::exists(curr_path))
 			{
+                cerr<< curr_path.string().c_str()<<endl;
                 throw std::logic_error("You enter wrong name");
 			}
             buff_path = curr_path.c_str();
@@ -156,7 +173,8 @@ void Root::copy_file_or_folder(const std::filesystem::path& path,const string& n
 		{
 			cout << ex.what() << endl;
 		}
-	}
+    }
+
 }
 void Root::paste_file_or_folder(const std::filesystem::path& path)
 {
@@ -176,6 +194,10 @@ void Root::rename_file_or_folder(const std::filesystem::path& path,const string&
         std::filesystem::path curr_path = path;
         std::filesystem::path newpath = path;
         curr_path /= name;
+        if(curr_path.string().back() == '/')
+        {
+            return;
+        }
         if (!fs::exists(curr_path))
         {
             throw std::logic_error("You enter wrong name");
@@ -203,43 +225,44 @@ void Root::move_file_or_folder(const std::filesystem::path& path)
 
 }
 
-int Root::size_of_folder(const std::filesystem::path& path)
+size_t Root::size_of_folder(const std::filesystem::path& path)
 {
-    int size = 0;
+    size_t folder_size = 0;
 
     for (const auto& entry : fs::directory_iterator(path))
     {
         if (fs::is_regular_file(entry))
         {
-           size += entry.file_size();
+            fs::path p = entry;
+            folder_size += fs::file_size(p);
         }
-
     }
-    return size;
+
+    return folder_size;
 }
 
-void Root::sort_by_name()
+void Root::Sort(const std::string &sorting)
 {
-
-    sort(entities.begin(),entities.end(),[](const Entity &first,const Entity &second)
+    if(sorting == "by name")
     {
-        return (first.name < second.name);
-    });
-
-}
-
-void Root::sort_by_size()
-{
-
-    sort(entities.begin(),entities.end(),[](const Entity &first,const Entity &second)
+        sort(entities.begin(),entities.end(),[](const Entity &first,const Entity &second)
+        {
+            return (first.name < second.name);
+        });
+    }
+    else
     {
-        return (first.size < second.size);
-    });
+        sort(entities.begin(),entities.end(),[](const Entity &first,const Entity &second)
+        {
+            return (first.size > second.size);
+        });
+    }
 
 }
 
-bool Root::search_file(const string& path,const string& name_of_file)
+bool Root::isSearch_file(const string& path,const string& name_of_file)
 {
+
    for (const auto& entry : fs::recursive_directory_iterator(path,filesystem::directory_options::skip_permission_denied))
    {
         if (entry.path().filename().string() == name_of_file)
@@ -248,18 +271,19 @@ bool Root::search_file(const string& path,const string& name_of_file)
             return true;
         }
     }
+
     return false;
+
 }
 
 void Root::find_file(const std::string& name)
 {
+
     search_directories.clear();
-
-
     #ifdef linux
     const string rootPath = "/home";
     #elif _WIN32
-    const string rootPath = "C:";
+    const string rootPath = "C:\/";
     #endif
     const unsigned int maxThreads = 8;
 
@@ -302,7 +326,7 @@ void Root::find_file(const std::string& name)
              }
              m.unlock();
 
-             if(search_file(path,name))
+             if(isSearch_file(path,name))
                 stop = true;
           }
         }));
@@ -312,7 +336,26 @@ void Root::find_file(const std::string& name)
         t.join();
 }
 
+std::string Root::getBuff_str()
+{
+    return buff_str;
+}
 
+std::filesystem::path Root::getBuff_path()
+{
+    return buff_path;
+}
+
+
+std::vector<std::filesystem::path> Root::getSearch_directories()
+{
+    return search_directories;
+}
+
+std::vector<Entity> Root::getEntities()
+{
+    return entities;
+}
 
 
 

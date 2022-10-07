@@ -1,5 +1,4 @@
-#ifndef FORM_FOR_MOVE_H
-#define FORM_FOR_MOVE_H
+#pragma once
 #include <QListWidget>
 #include <QWidget>
 #include <QKeyEvent>
@@ -20,7 +19,7 @@ public:
 
     void addItem();
 
-    void addFilemanager(const  FileManager &filemanager_);
+    void addFilemanager(const FileManager &filemanager_);
 
 private slots:
 
@@ -40,4 +39,3 @@ private:
     FileManager filemanager;
 };
 
-#endif // FORM_FOR_MOVE_H

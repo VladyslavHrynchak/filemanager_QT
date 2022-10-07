@@ -1,5 +1,4 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
 #include <QListWidgetItem>
@@ -10,6 +9,7 @@
 #include <form_for_move.h>
 #include <QMouseEvent>
 #include <QAbstractItemView>
+#include <QComboBox>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -37,11 +37,27 @@ public:
 
     void copy();
 
+    void goBack(FileManager & filemanager,QLineEdit* lineEdit, QListWidget *listWidget);
+
+    void addItems_to_listWidget(FileManager & filemanager, QListWidget *listWidget);
+
+    void listWidgetGoToOtherPath(FileManager & filemanager, QListWidget *listWidget, QLineEdit *lineEdit, QListWidgetItem *item);
+
+    void lineEdit_editingFinished(FileManager & filemanager,QLineEdit* lineEdit, QListWidget *listWidget);
+
+    void getListWidget(QListWidget *listWidget);
+
+    void comboBox_currentIndexChanged(FileManager & filemanager, QComboBox *comboBox, QListWidget *listWidget);
+
     ~MainWindow();
 
 private slots:
 
-    void showContextMenu(const QPoint& pos);
+    void makeMenu(const QPoint& pos);
+
+    void showContextMenu_main(const QPoint& pos);
+
+    void showContextMenu_second(const QPoint& pos);
 
     void on_listWidget_main_itemDoubleClicked(QListWidgetItem *item);
 
@@ -67,10 +83,17 @@ private slots:
 
     void on_actionfolder_create_triggered();
 
-
     void move();
 
     void on_actionSearch_triggered();
+
+    void on_pushButton_back_2_pressed();
+
+    void on_lineEdit_2_editingFinished();
+
+    void checkItemChanged(QListWidgetItem *Item);
+
+    void on_comboBox_2_currentIndexChanged();
 
 private:
     Ui::MainWindow *ui;
@@ -81,6 +104,11 @@ private:
 
     FileManager filemanager;
 
+    FileManager filemanager_2;
+
     Form_for_move move_form;
+
+    QListWidgetItem *item = nullptr;
+
 };
-#endif
+

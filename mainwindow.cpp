@@ -12,15 +12,20 @@ MainWindow::MainWindow(QWidget *parent)
 {
 
     ui->setupUi(this);
-    setFixedSize(1143,680);
-    ui->splitter->setSizes(QList<int>() << 50 << 200);
+    setFixedSize(1143,730);
     addItems_to_listWidget_main();
+    addItems_to_listWidget_second();
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(100);
     ui->progressBar->hide();
+    ui->listWidget_main->setEditTriggers( QAbstractItemView::SelectedClicked);
+    ui->listWidget_main->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->listWidget_second->setEditTriggers( QAbstractItemView::SelectedClicked);
     ui->listWidget_second->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->listWidget_second, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
+    connect(ui->listWidget_main, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu_main(QPoint)));
+    connect(ui->listWidget_second, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu_second(QPoint)));
+    connect(ui->listWidget_main, &QListWidget::itemClicked, this , &MainWindow::checkItemChanged);
+    connect(ui->listWidget_second, &QListWidget::itemClicked, this , &MainWindow::checkItemChanged);
 
 }
 
@@ -29,104 +34,101 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::checkItemChanged(QListWidgetItem *Item)
+{
+    item = Item;
+}
 void MainWindow::addItems_to_listWidget_main()
 {
-
-    for (int i = 0; i < filemanager.directory.entities.size(); ++i)
-    {
-        if(fs::is_regular_file(filemanager.directory.entities[i].path))
-        {
-            QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/file.png"),filemanager.directory.entities[i].name.c_str());
-            ui->listWidget_main->addItem(item);
-        }
-        else
-        {
-            QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/folder.png"),filemanager.directory.entities[i].name.c_str());
-            ui->listWidget_main->addItem(item);
-        }
-    }
-
+    addItems_to_listWidget(filemanager,ui->listWidget_main);
 }
 
 void MainWindow::addItems_to_listWidget_second()
 {
+    addItems_to_listWidget(filemanager_2,ui->listWidget_second);
+}
 
-    Sort_by();
+void MainWindow::addItems_to_listWidget(FileManager & filemanager, QListWidget *listWidget)
+{
     ui->progressBar->setValue(0);
-    ui->progressBar->setMaximum(filemanager.directory.entities.size());
+    ui->progressBar->setMaximum(filemanager.directory.getEntities().size());
     ui->progressBar->show();
+    if(filemanager.directory.getEntities().empty())
+    {
+        QListWidgetItem *item =  new QListWidgetItem();
+        listWidget->addItem(item);
+    }
 
-    for (int i = 0; i < filemanager.directory.entities.size(); ++i)
+    for (int i = 0; i < filemanager.directory.getEntities().size(); ++i)
     {
         ui->progressBar->setValue(i);
 
-        if(fs::is_regular_file(filemanager.directory.entities[i].path))
+        if(fs::is_regular_file(filemanager.directory.getEntities()[i].path))
         {
-            if(filemanager.directory.entities[i].extension == ".odt")
+            if(filemanager.directory.getEntities()[i].extension == ".odt")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/odt.png"),filemanager.directory.entities[i].name.c_str());
-                ui->listWidget_second->addItem(item);
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/odt.png"),filemanager.directory.getEntities()[i].name.c_str());
+                listWidget->addItem(item);
             }
-            else if(filemanager.directory.entities[i].extension == ".exe")
+            else if(filemanager.directory.getEntities()[i].extension == ".exe")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/exe.png"),filemanager.directory.entities[i].name.c_str());
-                ui->listWidget_second->addItem(item);
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/exe.png"),filemanager.directory.getEntities()[i].name.c_str());
+                listWidget->addItem(item);
             }
-            else if(filemanager.directory.entities[i].extension == ".mp4")
+            else if(filemanager.directory.getEntities()[i].extension == ".mp4")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp4.png"),filemanager.directory.entities[i].name.c_str());
-                ui->listWidget_second->addItem(item);
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp4.png"),filemanager.directory.getEntities()[i].name.c_str());
+                listWidget->addItem(item);
             }
-            else if(filemanager.directory.entities[i].extension == ".mp3")
+            else if(filemanager.directory.getEntities()[i].extension == ".mp3")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp3.png"),filemanager.directory.entities[i].name.c_str());
-                ui->listWidget_second->addItem(item);
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp3.png"),filemanager.directory.getEntities()[i].name.c_str());
+                listWidget->addItem(item);
             }
-            else if(filemanager.directory.entities[i].extension == ".cpp")
+            else if(filemanager.directory.getEntities()[i].extension == ".cpp")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/cpp.png"),filemanager.directory.entities[i].name.c_str());
-                ui->listWidget_second->addItem(item);
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/cpp.png"),filemanager.directory.getEntities()[i].name.c_str());
+                listWidget->addItem(item);
             }
-            else if(filemanager.directory.entities[i].extension == ".pdf")
+            else if(filemanager.directory.getEntities()[i].extension == ".pdf")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/pdf.png"),filemanager.directory.entities[i].name.c_str());
-                ui->listWidget_second->addItem(item);
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/pdf.png"),filemanager.directory.getEntities()[i].name.c_str());
+                listWidget->addItem(item);
             }
-            else if(filemanager.directory.entities[i].extension == ".png")
+            else if(filemanager.directory.getEntities()[i].extension == ".png")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/png.png"),filemanager.directory.entities[i].name.c_str());
-                ui->listWidget_second->addItem(item);
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/png.png"),filemanager.directory.getEntities()[i].name.c_str());
+                listWidget->addItem(item);
             }
-            else if(filemanager.directory.entities[i].extension == ".docx")
+            else if(filemanager.directory.getEntities()[i].extension == ".docx")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/docx.png"),filemanager.directory.entities[i].name.c_str());
-                ui->listWidget_second->addItem(item);
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/docx.png"),filemanager.directory.getEntities()[i].name.c_str());
+                listWidget->addItem(item);
             }
             else
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/file.png"),filemanager.directory.entities[i].name.c_str());
-                ui->listWidget_second->addItem(item);
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/file.png"),filemanager.directory.getEntities()[i].name.c_str());
+                listWidget->addItem(item);
             }
         }
         else
         {
-            QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/folder.png"),filemanager.directory.entities[i].name.c_str());
-            ui->listWidget_second->addItem(item);
+            QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/folder.png"),filemanager.directory.getEntities()[i].name.c_str());
+            listWidget->addItem(item);
         }
 
-        ui->listWidget_second->item(i)->setFlags(ui->listWidget_second->item(i)->flags() | Qt::ItemIsEditable);
+       listWidget->item(i)->setFlags(listWidget->item(i)->flags() | Qt::ItemIsEditable);
     }
-    ui->progressBar->setValue(filemanager.directory.entities.size());
+    ui->progressBar->setValue(filemanager.directory.getEntities().size());
     ui->progressBar->hide();
-
+    item = nullptr;
 }
 
-void  MainWindow::addItems_to_listWidget_second(const std::vector<fs::path> paths)
-{
 
+void MainWindow::addItems_to_listWidget_second(const std::vector<fs::path> paths)
+{
     for (int i = 0; i < paths.size(); ++i)
     {
-        ui->progressBar->setValue(i);
 
         if(fs::is_regular_file(paths[i]))
         {
@@ -182,150 +184,191 @@ void  MainWindow::addItems_to_listWidget_second(const std::vector<fs::path> path
             ui->listWidget_second->addItem(item);
         }
     }
-
 }
 
 void MainWindow::on_listWidget_main_itemDoubleClicked(QListWidgetItem *item)
 {
-
-    #ifdef linux
-    filemanager.path = "/home";
-    #elif _WIN32
-    filemanager.path = "C:";
-    #endif
-    filemanager.go_the_other_path(item->text().toStdString());
-    ui->listWidget_second->clear();
-    ui->lineEdit->clear();
-    ui->lineEdit->setText(QString(filemanager.path.string().c_str()));
-    addItems_to_listWidget_second();
+    ui->comboBox->setCurrentIndex(0);
+    listWidgetGoToOtherPath(filemanager,ui->listWidget_main,ui->lineEdit,item);
 
 }
 
 void MainWindow::on_listWidget_second_itemDoubleClicked(QListWidgetItem *item)
 {
+    ui->comboBox_2->setCurrentIndex(0);
+    listWidgetGoToOtherPath(filemanager_2,ui->listWidget_second,ui->lineEdit_2,item);
+}
 
-    if(!filemanager.directory.search_directories.empty())
+void MainWindow::listWidgetGoToOtherPath(FileManager & filemanager, QListWidget *listWidget, QLineEdit *lineEdit, QListWidgetItem *item)
+{
+    if(!filemanager.directory.getSearch_directories().empty())
     {
-        filemanager.path = filemanager.directory.search_directories[0].parent_path();
-        filemanager.go_the_other_path(filemanager.directory.search_directories[0].filename().string());
-        filemanager.directory.search_directories.clear();
+        filemanager.path = filemanager.directory.getSearch_directories()[0].parent_path();
+        filemanager.go_the_other_path(filemanager.directory.getSearch_directories()[0].filename().string());
+        filemanager.directory.getSearch_directories().clear();
     }
     else
     {
-     filemanager.go_the_other_path(item->text().toStdString());
+        filemanager.go_the_other_path(item->text().toStdString());
     }
-     ui->listWidget_second->clear();
-     ui->lineEdit->clear();
-     ui->lineEdit->setText(QString(filemanager.path.string().c_str()));
-     addItems_to_listWidget_second();
 
+    listWidget->clear();
+    lineEdit->clear();
+    lineEdit->setText(QString(filemanager.path.string().c_str()));
+
+    (listWidget->objectName() == "listWidget_main") ? addItems_to_listWidget_main() : addItems_to_listWidget_second();
 }
 
 void MainWindow::on_pushButton_back_pressed()
 {
+   goBack(filemanager,ui->lineEdit,ui->listWidget_main);
+}
 
-    if(filemanager.paths.size() != 1)
+void MainWindow::on_pushButton_back_2_pressed()
+{
+    goBack(filemanager_2,ui->lineEdit_2,ui->listWidget_second);
+}
+
+void MainWindow::goBack(FileManager & filemanager,QLineEdit* lineEdit, QListWidget *listWidget)
+{
+    if(!filemanager.getPaths_for_button_back().empty())
     {
-        filemanager.path = filemanager.paths.top();
+        filemanager.path = filemanager.getPaths_for_button_back().top();
         filemanager.go_the_other_path();
-        filemanager.paths.pop();
-        ui->lineEdit->clear();
-        ui->lineEdit->setText(QString(filemanager.path.string().c_str()));
-        ui->listWidget_second->clear();
-        addItems_to_listWidget_second();
-    }
-
+        filemanager.getPaths_for_button_back().pop();
+        lineEdit->clear();
+        lineEdit->setText(QString(filemanager.path.string().c_str()));
+        listWidget->clear();
+        (listWidget->objectName() == "listWidget_main") ? addItems_to_listWidget_main() : addItems_to_listWidget_second();
+     }
 }
 
 void MainWindow::on_lineEdit_editingFinished()
 {
-    if(ui->lineEdit->text().toStdString()[0] == '/')
-    {
-        filemanager.path = ui->lineEdit->text().toStdString();
-        filemanager.go_the_other_path();
-        ui->listWidget_second->clear();
-        addItems_to_listWidget_second();
-    }
+
+    item=nullptr;
+    lineEdit_editingFinished(filemanager,ui->lineEdit,ui->listWidget_main);
 
 }
 
+void MainWindow::on_lineEdit_2_editingFinished()
+{
+    item=nullptr;
+   lineEdit_editingFinished(filemanager_2,ui->lineEdit_2,ui->listWidget_second);
+
+}
+
+void MainWindow::lineEdit_editingFinished(FileManager & filemanager,QLineEdit* lineEdit, QListWidget *listWidget)
+{
+    if(lineEdit->text().toStdString()[0] == '/')
+    {
+        filemanager.path = lineEdit->text().toStdString();
+        filemanager.go_the_other_path();
+        listWidget->clear();
+        (listWidget->objectName() == "listWidget_main") ? addItems_to_listWidget_main() : addItems_to_listWidget_second();
+    }
+}
 
 void MainWindow::on_actionCreate_2_triggered()
 {
-
-    create_file();
-
+    create_folder();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-   if(event->key() == Qt::Key_Delete)
-   {
-        QMessageBox::StandardButton reply = QMessageBox::question(this,"","Do you want to delete?",QMessageBox::Yes | QMessageBox::No);
-        if(reply == QMessageBox::Yes)
+    if(item != nullptr)
+    {
+         QListWidget *listWidget = nullptr;
+         FileManager *filemanager_temp = nullptr;
+
+
+        if(item->listWidget()->objectName() == "listWidget_main")
         {
-            filemanager.directory.deleteFile(filemanager.path,ui->listWidget_second->currentItem()->text().toStdString());
-            ui->listWidget_second->clear();
-            addItems_to_listWidget_second();
+            filemanager_temp = &filemanager;
+            listWidget = ui->listWidget_main;
         }
         else
         {
-            return;
+            filemanager_temp = &filemanager_2;
+            listWidget = ui->listWidget_second;
         }
-   }
-   if(event->type() == QKeyEvent::KeyPress)
-   {
-        if(event->matches(QKeySequence::Copy))
+       if(event->key() == Qt::Key_Delete)
+       {
+            QMessageBox::StandardButton reply = QMessageBox::question(this,"","Do you want to delete?",QMessageBox::Yes | QMessageBox::No);
+            if(reply == QMessageBox::Yes)
+            {
+                (filemanager_temp->directory.deleteFile(filemanager_temp->path,listWidget->currentItem()->text().toStdString())) ? QMessageBox::information(this,"","File was deleted") :QMessageBox::critical(this,"Error","Deletion error!!! Try again.");
+                listWidget->clear();
+                (listWidget->objectName() == "listWidget_main") ? addItems_to_listWidget_main() : addItems_to_listWidget_second();
+            }
+            else
+            {
+                return;
+            }
+        }
+        if(event->type() == QKeyEvent::KeyPress)
         {
-            copy();
+            if(event->matches(QKeySequence::Copy))
+            {
+                copy();
+            }
+            else if (event->matches(QKeySequence::Paste))
+            {
+                listWidget->clear();
+                filemanager_temp->directory.paste_file_or_folder(filemanager_temp->path);
+                (listWidget->objectName() == "listWidget_main") ? addItems_to_listWidget_main() : addItems_to_listWidget_second();
+            }
+            else if (event->matches(QKeySequence::Save))
+            {
+                filemanager_temp->directory.rename_file_or_folder(filemanager_temp->path,filemanager_temp->directory.getEntities()[listWidget->currentRow()].name.c_str(), listWidget->currentItem()->text().toStdString());
+                listWidget->clear();
+                (listWidget->objectName() == "listWidget_main") ? addItems_to_listWidget_main() : addItems_to_listWidget_second();
+            }
         }
-        else if (event->matches(QKeySequence::Paste))
-        {
-            ui->listWidget_second->clear();
-            filemanager.directory.paste_file_or_folder(filemanager.path);
-            addItems_to_listWidget_second();
-        }
-        else if (event->matches(QKeySequence::Save))
-        {
-            filemanager.directory.rename_file_or_folder(filemanager.path,filemanager.directory.entities[ui->listWidget_second->currentRow()].name.c_str(), ui->listWidget_second->currentItem()->text().toStdString());
-            ui->listWidget_second->clear();
-            addItems_to_listWidget_second();
-        }
-   }
-
+    }
 }
 
 void MainWindow::copy()
 {
-
-    filemanager.directory.copy_file_or_folder(filemanager.path,ui->listWidget_second->currentItem()->text().toStdString());
-
+    (item->listWidget()->objectName() == "listWidget_main") ? filemanager.directory.copy_file_or_folder(filemanager.path,ui->listWidget_main->currentItem()->text().toStdString()) : filemanager_2.directory.copy_file_or_folder(filemanager_2.path,ui->listWidget_second->currentItem()->text().toStdString());
 }
 
 void MainWindow::move()
 {
+    if(item!=nullptr)
+    {
+        copy();
 
-    copy();
-    move_form.addFilemanager(filemanager);
-    move_form.addItem();
-    move_form.show();
-    ui->listWidget_second->clear();
-    addItems_to_listWidget_second();
+        if(item->listWidget()->objectName() == "listWidget_main")
+        {
+            move_form.addFilemanager(filemanager);
+            move_form.addItem();
+            move_form.show();
+            ui->listWidget_main->clear();
+            addItems_to_listWidget_main();
 
+        }
+        else
+        {
+            move_form.addFilemanager(filemanager_2);
+            move_form.addItem();
+            move_form.show();
+            ui->listWidget_second->clear();
+            addItems_to_listWidget_second();
+        }
+    }
 }
+
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-
     if(event->button() == Qt::RightButton )
     {
         info_about_entities();
     }
-
 }
 
 void MainWindow::Sort_by()
 {
-
     if(ui->comboBox->currentText() == "none")
     {
         return;
@@ -333,72 +376,126 @@ void MainWindow::Sort_by()
     else if(ui->comboBox->currentText() == "name")
     {
         ui->listWidget_second->clear();
-        filemanager.directory.sort_by_name();
+        filemanager.directory.Sort("by name");
     }
     else if(ui->comboBox->currentText() == "size")
     {
         ui->listWidget_second->clear();
-        filemanager.directory.sort_by_size();
+        filemanager.directory.Sort("by size");
     }
-
 }
 
-void MainWindow::on_comboBox_currentIndexChanged()
+void MainWindow::comboBox_currentIndexChanged(FileManager & filemanager, QComboBox *comboBox, QListWidget *listWidget)
 {
-
-    if(ui->comboBox->currentText() != "none")
+    if(comboBox->currentText() != "none")
     {
-        if(ui->comboBox->currentText() == "name")
+        if(comboBox->currentText() == "name")
         {
-            ui->listWidget_second->clear();
-            filemanager.directory.sort_by_name();
-            addItems_to_listWidget_second();
+            listWidget->clear();
+            filemanager.directory.Sort("by name");
+            (listWidget->objectName() == "listWidget_main") ? addItems_to_listWidget_main() : addItems_to_listWidget_second();
         }
         else
         {
             ui->listWidget_second->clear();
-            filemanager.directory.sort_by_size();
-            addItems_to_listWidget_second();
+            filemanager.directory.Sort("by size");
+            (listWidget->objectName() == "listWidget_main") ? addItems_to_listWidget_main() : addItems_to_listWidget_second();;
         }
     }
+}
 
+void MainWindow::on_comboBox_currentIndexChanged()
+{
+    comboBox_currentIndexChanged(filemanager,ui->comboBox,ui->listWidget_main);
+}
+
+void MainWindow::on_comboBox_2_currentIndexChanged()
+{
+    comboBox_currentIndexChanged(filemanager_2,ui->comboBox_2,ui->listWidget_second);
 }
 
 void MainWindow::create_folder()
 {
-
-    second.setModal(true);
-    second.ui->label->setText(QString("Enter name of folder"));
-    second.exec();
-    string name = second.ui->lineEdit->text().toStdString();
-
-    if(!name.empty())
+    if(item != nullptr)
     {
-        filemanager.directory.addFolder(filemanager.path, name);
-        ui->listWidget_second->clear();
-        addItems_to_listWidget_second();
-    }
+        QListWidget *listWidget;
+        FileManager *filemanager_copy;
+        if(item->listWidget()->objectName() == "listWidget_main")
+        {
+            filemanager_copy = &filemanager;
+            listWidget = ui->listWidget_main;
+        }
+        else
+        {
+            filemanager_copy = &filemanager_2;
+            listWidget = ui->listWidget_second;
+        }
+        second.ui->lineEdit->text().clear();
+        second.setModal(true);
+        second.ui->label->setText(QString("Enter name of folder"));
+        second.exec();
+        string name = second.ui->lineEdit->text().toStdString();
 
+        if(!name.empty())
+        {
+            if(!filemanager_copy->directory.addFolder(filemanager_copy->path, name))
+            {
+                QMessageBox::critical(this,"Error", "Error adding folder");
+            }
+
+            listWidget->clear();
+            (listWidget->objectName() == "listWidget_main") ? addItems_to_listWidget_main() : addItems_to_listWidget_second();
+        }
+        item = nullptr;
+    }
 }
+
 void MainWindow::create_file()
 {
-
-    second.setModal(true);
-    second.ui->label->setText(QString("Enter name of file"));
-    second.exec();
-    string name = second.ui->lineEdit->text().toStdString();
-
-    if(!name.empty())
+    if(item != nullptr)
     {
-        filemanager.directory.addFile(filemanager.path, name);
-        ui->listWidget_second->clear();
-        addItems_to_listWidget_second();
-    }
+        QListWidget *listWidget;
+        FileManager *filemanager_copy;
+        if(item->listWidget()->objectName() == "listWidget_main")
+        {
+            filemanager_copy = &filemanager;
+            listWidget = ui->listWidget_main;
+        }
+        else
+        {
+            filemanager_copy = &filemanager_2;
+            listWidget = ui->listWidget_second;
+        }
+        second.setModal(true);
+        second.ui->label->setText(QString("Enter name of file"));
+        second.exec();
+        string name = second.ui->lineEdit->text().toStdString();
 
+        if(!name.empty())
+        {
+            if(!filemanager_copy->directory.addFile(filemanager_copy->path, name))
+            {
+                QMessageBox::critical(this,"Error", "Error adding file");
+            }
+
+            listWidget->clear();
+            (listWidget->objectName() == "listWidget_main") ? addItems_to_listWidget_main() : addItems_to_listWidget_second();
+        }
+        item = nullptr;
+    }
 }
 
 void MainWindow::info_about_entities()
 {
+    FileManager *filemanager_info;
+    if(item->listWidget()->objectName() == "listWidget_main")
+    {
+        filemanager_info = &filemanager;
+    }
+    else
+    {
+        filemanager_info = &filemanager_2;
+    }
 
     about.reset_all();
     std::filesystem::path path;
@@ -407,14 +504,10 @@ void MainWindow::info_about_entities()
     {
         try
         {
-            path = filemanager.path;
+            path = filemanager_info->path;
 
             path /= ui->listWidget_second->currentItem()->text().toStdString();
-            if (!fs::exists(path))
-            {
 
-                  throw std::logic_error("You enter wrong name");
-            }
             if (fs::is_regular_file(path))
             {
                 about.ui->label->setText(QString("name: "));
@@ -424,7 +517,7 @@ void MainWindow::info_about_entities()
 
                 about.ui->about_right_1->setText(QString(path.filename().string().c_str()));
                 about.ui->about_right_2->setText(QString(filemanager.path.string().c_str()));
-                about.ui->about_right_3->setText(QString::number(filemanager.directory.size_of_folder(filemanager.path)));
+                about.ui->about_right_3->setText(QString::number(filemanager.directory.size_of_folder(path)));
                 about.ui->about_right_4->setText(QString(path.extension().string().c_str()));
             }
             else
@@ -435,7 +528,7 @@ void MainWindow::info_about_entities()
 
                 about.ui->about_right_1->setText(QString(path.filename().string().c_str()));
                 about.ui->about_right_2->setText(QString(filemanager.path.string().c_str()));
-                about.ui->about_right_3->setText(QString::number(filemanager.directory.size_of_folder(filemanager.path)));
+                about.ui->about_right_3->setText(QString::number(filemanager.directory.size_of_folder(path)));
             }
 
             about.show();
@@ -446,15 +539,11 @@ void MainWindow::info_about_entities()
             return;
         }
 
-       }
-
+    }
 }
 
-void MainWindow::showContextMenu(const QPoint& pos)
+void MainWindow::makeMenu(const QPoint& pos)
 {
-
-    QPoint globalPos = ui->listWidget_second->mapToGlobal(pos);
-
     QMenu myMenu;
 
     myMenu.addAction("Create file", this, SLOT(create_file()));
@@ -463,21 +552,35 @@ void MainWindow::showContextMenu(const QPoint& pos)
     myMenu.addAction("Properties", this, SLOT(info_about_entities()));
     myMenu.addAction("Disk", this, SLOT(info_about_space_on_computer()));
 
-    myMenu.exec(globalPos);
+    myMenu.exec(pos);
+}
 
+void MainWindow::showContextMenu_main(const QPoint& pos)
+{
+    if(item != nullptr)
+    {
+        QPoint globalPos = ui->listWidget_main->mapToGlobal(pos);
+
+        makeMenu(globalPos);
+    }
+
+}
+
+void MainWindow::showContextMenu_second(const QPoint& pos)
+{
+    if(item != nullptr)
+    {
+        QPoint globalPos = ui->listWidget_second->mapToGlobal(pos);
+
+        makeMenu(globalPos);
+    }
 }
 
 void MainWindow::info_about_space_on_computer()
 {
 
     about.reset_all();
-
-    #ifdef linux
     const auto& root = fs::path("/");
-    #elif _WIN32
-    const auto& root = fs::path("C:");
-    #endif
-
     const auto& space = fs::space(root);
 
     about.ui->label->setText(QString("Disk"));
@@ -493,9 +596,9 @@ void MainWindow::info_about_space_on_computer()
 
 }
 
+
 void MainWindow::on_actionfile_create_triggered()
 {
-
     create_file();
 }
 
@@ -509,9 +612,9 @@ void MainWindow::on_actionSearch_triggered()
 {
 
     ui->listWidget_second->clear();
-    filemanager.directory.find_file(ui->lineEdit->text().toStdString());
-    addItems_to_listWidget_second(filemanager.directory.search_directories);
-    ui->lineEdit->text().clear();
+    filemanager_2.directory.find_file(ui->lineEdit_2->text().toStdString());
+    addItems_to_listWidget_second(filemanager_2.directory.getSearch_directories());
+    ui->lineEdit_2->text().clear();
 
 }
 

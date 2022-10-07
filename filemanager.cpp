@@ -5,7 +5,7 @@ using namespace std;
 
 FileManager::FileManager()
 {
-	directory.saveDirectoty(path);
+    directory.saveDirectoty(path);
 }
 
 void FileManager::go_the_other_path()
@@ -15,9 +15,9 @@ void FileManager::go_the_other_path()
 	{
         try
         {
-			directory.clearDirectory();
-			directory.saveDirectoty(path);
-			isAddPath = true;
+            directory.clearDirectory();
+            directory.saveDirectoty(path);
+            isAddPath = true;
         }
         catch (const std::exception& ex)
         {

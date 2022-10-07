@@ -7,9 +7,9 @@ struct Entity
 {
     std::filesystem::path path;
 
-	std::string name;
+    std::string name;
 
-	int size;
+    int size;
 
     std::string extension;
 };

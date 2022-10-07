@@ -42,7 +42,7 @@ bool Root::addFile(const std::filesystem::path& path, const string& name)
 bool Root::addFolder(const std::filesystem::path& path ,const string& name)
 {
 
-	std::filesystem::path newpath = path;
+    std::filesystem::path newpath = path;
     newpath /= name;
     if(!fs::exists(newpath))
     {
@@ -57,15 +57,15 @@ void Root::saveDirectoty(const std::filesystem::path& path)
 {
 
     for (const auto& entry : fs::directory_iterator(path))
-	{
-		if (fs::is_regular_file(entry))
-		{
+    {
+        if (fs::is_regular_file(entry))
+        {
             saveFile(entry.path());
-		}
-		else
-		{
+        }
+        else
+        {
             saveFolder(entry.path());
-		}
+        }
 	}
 
 }
@@ -73,10 +73,10 @@ void Root::saveDirectoty(const std::filesystem::path& path)
 void Root::saveFile(const std::filesystem::path& path)
 {
 
-	File newfile;
-	newfile.path = path;
+    File newfile;
+    newfile.path = path;
     newfile.name = path.filename().string();
-	newfile.size = fs::file_size(path);
+    newfile.size = fs::file_size(path);
     newfile.extension = path.extension().string();
     entities.push_back(newfile);
 
@@ -86,8 +86,8 @@ void Root::saveFile(const std::filesystem::path& path)
 void Root::saveFolder(const std::filesystem::path& path)
 {
 
-	Folder newfolder;
-	newfolder.path = path;
+    Folder newfolder;
+    newfolder.path = path;
     newfolder.name = path.filename().string();
     newfolder.size = size_of_folder(path);
     entities.push_back(newfolder);
@@ -98,37 +98,32 @@ void Root::saveFolder(const std::filesystem::path& path)
 bool Root::deleteFile(const std::filesystem::path& path, const string& name)
 {
 
-	bool isAddPath = false;
+    bool isAddPath = false;
     int index_to_delete = 0;
     std::filesystem::path newpath = path;
-	while (!isAddPath)
-	{
+    while(!isAddPath)
+    {
         try
-		{
-
+        {
             newpath /= name;
             if(newpath.string().back() == '/')
             {
                 return false;
             }
 
-			if (!fs::exists(newpath))
-			{
+            if (!fs::exists(newpath))
+            {
+                return false;
+            }
 
-               return false;
-			}
-
-
-			fs::remove(newpath);
+            fs::remove(newpath);
             isAddPath = true;
-
-		}
-		catch (const std::exception& ex)
-		{
-
+        }
+        catch (const std::exception& ex)
+        {
             return false;
-		}
-	}
+        }
+    }
     for (size_t i = 0; i < entities.size(); i++)
     {
         if (entities[i].path == newpath)
@@ -147,32 +142,31 @@ bool Root::deleteFile(const std::filesystem::path& path, const string& name)
 void Root::copy_file_or_folder(const std::filesystem::path& path,const string& name)
 {
 
-	bool isAddPath = false;
-	while (!isAddPath)
-	{
-		try
-		{			
-		    std::filesystem::path curr_path = path;
+    bool isAddPath = false;
+    while (!isAddPath)
+    {
+        try
+        {
+            std::filesystem::path curr_path = path;
 
             curr_path /= name;
             if(curr_path.string().back() == '/')
             {
                 return;
             }
-			if (!fs::exists(curr_path))
-			{
-                cerr<< curr_path.string().c_str()<<endl;
+            if (!fs::exists(curr_path))
+            {
                 throw std::logic_error("You enter wrong name");
-			}
+            }
             buff_path = curr_path.c_str();
             buff_str = name;
 
-			isAddPath = true;
-		}
-		catch (const std::exception& ex)
-		{
-			cout << ex.what() << endl;
-		}
+            isAddPath = true;
+            }
+        catch (const std::exception& ex)
+        {
+            cout << ex.what() << endl;
+        }
     }
 
 }
@@ -280,11 +274,9 @@ void Root::find_file(const std::string& name)
 {
 
     search_directories.clear();
-    #ifdef linux
+
     const string rootPath = "/home";
-    #elif _WIN32
-    const string rootPath = "C:\/";
-    #endif
+
     const unsigned int maxThreads = 8;
 
     atomic_bool stop = false;

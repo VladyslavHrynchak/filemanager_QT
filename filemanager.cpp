@@ -10,9 +10,9 @@ FileManager::FileManager()
 
 void FileManager::go_the_other_path()
 {
-	bool isAddPath = false;
-	while (!isAddPath)
-	{
+    bool isAddPath = false;
+    while (!isAddPath)
+    {
         try
         {
             directory.clearDirectory();
@@ -21,9 +21,9 @@ void FileManager::go_the_other_path()
         }
         catch (const std::exception& ex)
         {
-           return;
+            return;
         }
-	}
+    }
 
 }
 

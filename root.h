@@ -7,11 +7,11 @@ class Root
 {
 public:
 
-	void saveDirectoty(const std::filesystem::path& path);
+    void saveDirectoty(const std::filesystem::path& path);
 
     void saveFile(const std::filesystem::path& path);
 
-	void saveFolder(const std::filesystem::path& path);
+    void saveFolder(const std::filesystem::path& path);
 
     bool addFile(const std::filesystem::path& path, const std::string& name);
 
@@ -29,7 +29,7 @@ public:
 
     size_t size_of_folder(const std::filesystem::path& path);
 
-	void clearDirectory();
+    void clearDirectory();
 
     void Sort(const std::string &sorting);
 

@@ -72,26 +72,17 @@ void Root::saveDirectoty(const std::filesystem::path& path)
 
 void Root::saveFile(const std::filesystem::path& path)
 {
+    File newfile(path,path.filename().c_str(),fs::file_size(path),path.extension().string());
 
-    File newfile;
-    newfile.path = path;
-    newfile.name = path.filename().string();
-    newfile.size = fs::file_size(path);
-    newfile.extension = path.extension().string();
     entities.push_back(newfile);
-
 }
 
 
 void Root::saveFolder(const std::filesystem::path& path)
 {
+    Folder newfolder(path,path.filename().c_str(),size_of_folder(path));
 
-    Folder newfolder;
-    newfolder.path = path;
-    newfolder.name = path.filename().string();
-    newfolder.size = size_of_folder(path);
     entities.push_back(newfolder);
-
 }
 
 
@@ -126,11 +117,8 @@ bool Root::deleteFile(const std::filesystem::path& path, const string& name)
     }
     for (size_t i = 0; i < entities.size(); i++)
     {
-        if (entities[i].path == newpath)
-        {
-            entities[i].path = " ";
-            entities[i].name = " ";
-            entities[i].size = 0;
+        if (entities[i].getPath() == newpath)
+        {         
             index_to_delete = i;
         }
     }
@@ -239,16 +227,16 @@ void Root::Sort(const std::string &sorting)
 {
     if(sorting == "by name")
     {
-        sort(entities.begin(),entities.end(),[](const Entity &first,const Entity &second)
+        sort(entities.begin(),entities.end(),[](Entity &first,Entity &second)
         {
-            return (first.name < second.name);
+            return (first.getName() < second.getName());
         });
     }
     else
     {
-        sort(entities.begin(),entities.end(),[](const Entity &first,const Entity &second)
+        sort(entities.begin(),entities.end(),[](Entity &first, Entity &second)
         {
-            return (first.size > second.size);
+            return (first.getSize() > second.getSize());
         });
     }
 

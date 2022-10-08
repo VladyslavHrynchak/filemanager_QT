@@ -63,57 +63,57 @@ void MainWindow::addItems_to_listWidget(FileManager & filemanager, QListWidget *
     {
         ui->progressBar->setValue(i);
 
-        if(fs::is_regular_file(filemanager.directory.getEntities()[i].path))
+        if(fs::is_regular_file(filemanager.directory.getEntities()[i].getPath()))
         {
-            if(filemanager.directory.getEntities()[i].extension == ".odt")
+            if(filemanager.directory.getEntities()[i].getExtension() == ".odt")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/odt.png"),filemanager.directory.getEntities()[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/odt.png"),filemanager.directory.getEntities()[i].getName().c_str());
                 listWidget->addItem(item);
             }
-            else if(filemanager.directory.getEntities()[i].extension == ".exe")
+            else if(filemanager.directory.getEntities()[i].getExtension() == ".exe")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/exe.png"),filemanager.directory.getEntities()[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/exe.png"),filemanager.directory.getEntities()[i].getName().c_str());
                 listWidget->addItem(item);
             }
-            else if(filemanager.directory.getEntities()[i].extension == ".mp4")
+            else if(filemanager.directory.getEntities()[i].getExtension() == ".mp4")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp4.png"),filemanager.directory.getEntities()[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp4.png"),filemanager.directory.getEntities()[i].getName().c_str());
                 listWidget->addItem(item);
             }
-            else if(filemanager.directory.getEntities()[i].extension == ".mp3")
+            else if(filemanager.directory.getEntities()[i].getExtension() == ".mp3")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp3.png"),filemanager.directory.getEntities()[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/mp3.png"),filemanager.directory.getEntities()[i].getName().c_str());
                 listWidget->addItem(item);
             }
-            else if(filemanager.directory.getEntities()[i].extension == ".cpp")
+            else if(filemanager.directory.getEntities()[i].getExtension() == ".cpp")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/cpp.png"),filemanager.directory.getEntities()[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/cpp.png"),filemanager.directory.getEntities()[i].getName().c_str());
                 listWidget->addItem(item);
             }
-            else if(filemanager.directory.getEntities()[i].extension == ".pdf")
+            else if(filemanager.directory.getEntities()[i].getExtension() == ".pdf")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/pdf.png"),filemanager.directory.getEntities()[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/pdf.png"),filemanager.directory.getEntities()[i].getName().c_str());
                 listWidget->addItem(item);
             }
-            else if(filemanager.directory.getEntities()[i].extension == ".png")
+            else if(filemanager.directory.getEntities()[i].getExtension() == ".png")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/png.png"),filemanager.directory.getEntities()[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/png.png"),filemanager.directory.getEntities()[i].getName().c_str());
                 listWidget->addItem(item);
             }
-            else if(filemanager.directory.getEntities()[i].extension == ".docx")
+            else if(filemanager.directory.getEntities()[i].getExtension() == ".docx")
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/docx.png"),filemanager.directory.getEntities()[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/docx.png"),filemanager.directory.getEntities()[i].getName().c_str());
                 listWidget->addItem(item);
             }
             else
             {
-                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/file.png"),filemanager.directory.getEntities()[i].name.c_str());
+                QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/file.png"),filemanager.directory.getEntities()[i].getName().c_str());
                 listWidget->addItem(item);
             }
         }
         else
         {
-            QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/folder.png"),filemanager.directory.getEntities()[i].name.c_str());
+            QListWidgetItem *item =  new QListWidgetItem(QIcon(":rec/img/folder.png"),filemanager.directory.getEntities()[i].getName().c_str());
             listWidget->addItem(item);
         }
 
@@ -320,7 +320,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             }
             else if (event->matches(QKeySequence::Save))
             {
-                filemanager_temp->directory.rename_file_or_folder(filemanager_temp->path,filemanager_temp->directory.getEntities()[listWidget->currentRow()].name.c_str(), listWidget->currentItem()->text().toStdString());
+                filemanager_temp->directory.rename_file_or_folder(filemanager_temp->path,filemanager_temp->directory.getEntities()[listWidget->currentRow()].getName().c_str(), listWidget->currentItem()->text().toStdString());
                 listWidget->clear();
                 (listWidget->objectName() == "listWidget_main") ? addItems_to_listWidget_main() : addItems_to_listWidget_second();
             }
